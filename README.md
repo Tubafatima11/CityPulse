@@ -1,111 +1,93 @@
-# CityPulse — 30-Minute Hackathon Prototype 🏙️
+# CityPulse Hyderabad — GHMC Civic Connect 🏙️
 
-> **Tagline:** Turn street footage into actionable infrastructure intelligence.  
-> **One-Line Pitch:** CityPulse turns everyday street imagery into a live, evidence-backed maintenance queue—so city teams can see recurring problems, understand why they matter, and decide what to inspect first.
-
----
-
-## 1. Problem & Context
-Municipal public works departments receive thousands of fragmented citizen complaints each month detailing broken footpaths, clogged storm drains, potholes, and overflowing refuse. These reports:
-1. Arrive in disparate descriptions without visual standardization.
-2. Fragment identical physical locations into separate disconnected tickets.
-3. Lack transparent prioritization, forcing city teams to guess which defect poses immediate risk.
-
-**CityPulse** bridges this gap:
-- **Multimodal AI (Gemma / Gemini Vision):** Converts street photos and resident notes into structured visible evidence, severity ratings, and uncertainty flags without hallucinating unseen subbase damage.
-- **Recurrence Hotspot Clustering:** Automatically correlates reports by physical location identifiers.
-- **Explainable Priority Heuristic:** Computes an inspect-first priority ranking using transparent civic weighting.
-
-> ⚠️ **Safety & Scope Notice:** CityPulse provides AI-assisted triage support, not structural engineering certification or predictive deterioration modeling. A human inspector must verify all defects before dispatch. All demonstration records are synthetic.
+> **Tagline:** Turn street footage into actionable infrastructure intelligence for Hyderabad.  
+> **Target Civic Body:** Greater Hyderabad Municipal Corporation (GHMC) & Hyderabad Citizens.  
+> **One-Line Pitch:** CityPulse turns everyday street photos from Hyderabad into a live, evidence-backed municipal maintenance queue—so GHMC and DRF teams can pinpoint recurring hotspots, see why they matter, and prioritize field repairs.
 
 ---
 
-## 2. Architecture & Data Flow
+## 1. Hyderabad Problem & Civic Context
+Hyderabad's rapid urban expansion and monsoon season create acute street infrastructure challenges:
+- **Monsoon Waterlogging & Catch-Pit Choking:** Silt, debris, and plastic waste clog curb inlets in high-density corridors like Gachibowli, Madhapur, and Khairatabad, stalling traffic for hours.
+- **Road Bitumen Deterioration:** Heavy monsoon rains and heavy RTC bus traffic cause deep potholes in busy transit lanes (e.g. Jubilee Hills Road 36, Kukatpally Y-Junction).
+- **Pedestrian & Heritage Accessibility:** Uneven paving, broken storm manhole covers, and encroaching debris around busy corridors (e.g. Charminar Promenade, Secunderabad Station) pose severe pedestrian hazards.
+- **Fragmented 311 Grievances:** Citizens post scattered photos on social media or dial GHMC hotlines, creating dozens of disconnected duplicate tickets for the same physical corner.
+
+**CityPulse Hyderabad** solves this by:
+1. Allowing any citizen to **snap a picture directly** using their phone or webcam, tag their Hyderabad locality, and post in under 15 seconds.
+2. Running **Gemma Multimodal AI** to classify the hazard, extract concrete visual evidence, assess severity, and flag uncertainties.
+3. Automatically clustering repeated reports into **physical hotspots** across GHMC administrative zones.
+4. Providing GHMC officials with an **interactive map with color indications** and an explainable risk queue.
+
+---
+
+## 2. GHMC Administrative Zones & Coverage
+
+- **Serilingampally (West Zone):** Hitec City, Gachibowli Bio-Diversity, Madhapur, Mindspace, Kondapur
+- **Khairatabad (Central Zone):** Banjara Hills, Jubilee Hills, Somajiguda, Ameerpet
+- **Charminar (South Zone):** Old City, Lad Bazaar, Falaknuma, Mehdipatnam
+- **Secunderabad (North Zone):** Clock Tower, Begumpet, Marredpally, Paradise
+- **Kukatpally (North-West Zone):** KPHB Colony, Y-Junction, Miyapur
+- **LB Nagar (East Zone):** Dilsukhnagar, Kothapet, Saroornagar
+
+---
+
+## 3. Architecture & Data Flow
 
 ```text
-Street photo / sample video frame / resident note
+Hyderabad street photo (Live Camera / Upload) + Locality
                          │
                          ▼
-             Gemma Multimodal Triage
+             Gemma Multimodal AI Triage
       (Extracts visible evidence, severity, uncertainty)
                          │
                          ▼
-             Structured JSON Observation
+        GHMC Structured Incident Observation
                          │
                          ▼
-       Location Clustering & Recurrence Grouping
+      Geographic Hotspot Clustering (GHMC Zones)
                          │
                          ▼
      Deterministic Priority Scoring Heuristic
    Score = (Severity × 3) + min(Repeats - 1, 4) × 2 + (Accessibility × 2)
                          │
                          ▼
-          CityPulse Interactive Dashboard
-      (Priority Queue, Hotspot Map, Inspection Actions)
+        GHMC Official Dashboard & Live Map
+    (Red / Amber / Green visual indications + Work Orders)
 ```
-
-### Why Separate Model Inference & Scoring?
-- **Multimodal Model (Gemma / Gemini):** Interprets unstructured visual reality, identifies defects, surfaces concrete visible evidence, and explicitly flags what *cannot* be seen (e.g. pipe depth, subbase voids).
-- **Deterministic Code (Python):** Handles exact counting, duplicate deduplication, hotspot clustering, and transparent formula scoring. Eliminates black-box scoring.
 
 ---
 
-## 3. Transparent Priority Scoring Heuristic
+## 4. Map Indications & Transparent Prioritization
 
-$$\text{Priority Score} = (\text{Severity} \times 3) + \min(\text{Repeats} - 1, 4) \times 2 + (\text{Accessibility Impact} \times 2)$$
+### Interactive Pydeck Map Visual Indications:
+- 🔴 **Red Pins (Critical Hazard, Score ≥ 20):** High hazard to commuter safety or transit flow. Escalated for immediate GHMC Disaster Response Force (DRF) or road repair squad dispatch.
+- 🟠 **Amber Pins (Moderate Priority, Score 14–19):** Urgent defect; requires action within 24–48 hours to prevent deterioration.
+- 🟢 **Green Pins (Routine Maintenance, Score < 14):** Logged for standard municipal sweeps and scheduled upkeep.
+- ⚪ **Pin Size:** Expands dynamically based on citizen complaint volume at that specific spot.
 
-- **Severity (1–5, weighted $\times 3$):** Direct physical hazard or structural degradation observed.
-- **Recurrence ($\min(\text{Repeats}-1, 4) \times 2$):** Citizen complaint frequency at this specific location (caps at 4 repeats / 8 bonus points to avoid spam dominance).
-- **Accessibility Impact (0–5, weighted $\times 2$):** Obstruction to wheelchairs, strollers, cane-users, or transit crossings.
-
-### Example:
-- Severity: 4 $\rightarrow$ 12 pts
-- Repeated observations: 3 $\rightarrow$ 4 pts
-- Accessibility impact: 2 $\rightarrow$ 4 pts
-- **Total: 20 pts (HIGH URGENCY)**
+### Priority Formula:
+$$\text{Priority Score} = (\text{Severity} \times 3) + \min(\text{Repeats} - 1, 4) \times 2 + (\text{Accessibility} \times 2)$$
 
 ---
 
-## 4. Quickstart: Running CityPulse
+## 5. Quickstart: Running CityPulse Hyderabad
 
-### Prerequisites
-- Python 3.10+
-- Streamlit & Pillow (installed automatically via requirements)
-
-### Installation & Launch
-```bash
-cd "C:\Users\Moiz\.gemini\antigravity\scratch\citypulse"
-python -m pip install -r requirements.txt
-python -m streamlit run app.py
+### Local Server Launch
+```powershell
+& "C:\Users\Moiz\AppData\Local\Programs\Python\Python311\Scripts\streamlit.exe" run "C:\Users\Moiz\.gemini\antigravity\scratch\citypulse\app.py"
 ```
 
-### Optional Live Gemma / Gemini API
-CityPulse includes high-fidelity deterministic offline presets so **the demo works 100% offline with zero setup**. If you wish to enable live multimodal inference with your own Google Gemini or Gemma API key:
-- Pass your key in the Streamlit sidebar input, or:
-- Set environment variable: `set GEMINI_API_KEY=your_api_key_here`
+Open your browser at:
+👉 **[http://localhost:8501](http://localhost:8501)**
 
 ---
 
-## 5. 45-Second Judge Demo Sequence
+## 6. 45-Second Pitch Script for GHMC
 
-| Time | Action | What to Say |
-|------|--------|-------------|
-| **0–10s** | Open Tab 1: Priority Queue | *"Cities get thousands of fragmented reports, but chronic underlying problems are buried across separate tickets."* |
-| **10–20s** | Open Tab 2: Analyze Observation | *"Watch Gemma analyze this clogged storm drain. Notice how it extracts direct visible evidence, flags what it cannot see, and assigns severity."* |
-| **20–30s** | Click **Run Triage** $\rightarrow$ **Enqueue** | *"It clusters this report into Block A, boosting the recurrence bonus."* |
-| **30–40s** | Open Tab 3: Hotspot Map | *"Inspectors instantly see the multi-issue hotspot map and an explainable score breakdown—no black-box AI."* |
-| **40–45s** | Conclude | *"CityPulse doesn't replace city inspectors—it helps them decide where to look first."* |
-
----
-
-## 6. Project Structure
-
-```
-citypulse/
-├── app.py                # Main Streamlit dashboard (Queue, Triage, Hotspot Map, Rehearsal)
-├── sample_data.py        # Demo dataset, hotspot aggregation, priority formula
-├── gemma_triage.py       # Multimodal extraction engine (Live API + Offline Fallback)
-├── sample_images/        # Sample street frames for demonstration
-├── requirements.txt      # Dependencies
-└── README.md             # Project documentation and pitch guide
-```
+| Time | Tab | Spoken Script |
+|------|-----|---------------|
+| **0–10s** | Citizen Corner | *"From Gachibowli waterlogging to Jubilee Hills potholes, GHMC receives thousands of fragmented citizen complaints with no consistent way to prioritize."* |
+| **10–20s** | Citizen Corner | *"With CityPulse, a resident snaps a photo and picks their locality. Gemma multimodal AI diagnoses the hazard, extracts concrete evidence, and assigns urgency in under 2 seconds."* |
+| **20–30s** | GHMC Official Dashboard | *"On the GHMC dashboard, issues appear live on an interactive Hyderabad map with red, amber, and green indications scaled by complaint volume."* |
+| **30–45s** | Official Dashboard | *"GHMC engineers and DRF teams immediately see which drain or crater needs emergency dispatch. CityPulse doesn't replace inspectors—it tells them where to look first."* |

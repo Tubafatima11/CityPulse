@@ -1,5 +1,5 @@
 """
-Generates clean synthetic demo visual cards for CityPulse testing.
+Generates clean Hyderabad civic demo visual cards for CityPulse testing.
 """
 
 import os
@@ -11,31 +11,31 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 SAMPLES = [
     {
         "filename": "sample_drain.jpg",
-        "title": "7th & Market: Storm Drain Inflow",
+        "title": "Gachibowli Bio-Diversity Junction (Inflow Drain)",
         "color": (26, 54, 93),
         "accent": (59, 130, 246),
-        "details": ["Grate Obstruction: ~80%", "Leaf Mulch & Litter", "Standing Runoff: 4-inch Pool", "Location: BLOCK-A"]
+        "details": ["Grate Blockage: ~85% with monsoon silt", "Waterlogging: 5-inch pool into IT corridor", "GHMC Zone: Serilingampally (West)", "Coordinates: 17.4401° N, 78.3489° E"]
     },
     {
         "filename": "sample_sidewalk.jpg",
-        "title": "Elmwood Pedestrian Walkway",
+        "title": "Charminar Pedestrian Promenade (Lad Bazaar)",
         "color": (120, 53, 15),
         "accent": (245, 158, 11),
-        "details": ["2.5-Inch Vertical Upheaval", "Concrete Fracture Line", "Wheelchair Corridor Blocked", "Location: BLOCK-B"]
+        "details": ["Cobblestone slab upheaval (>2 inches)", "Direct hazard for elderly pedestrians & tourists", "GHMC Zone: Charminar (South)", "Coordinates: 17.3616° N, 78.4747° E"]
     },
     {
         "filename": "sample_pothole.jpg",
-        "title": "4th Ave Transit Corridor",
+        "title": "Road No. 36 Jubilee Hills (Near Metro Pillar 1650)",
         "color": (127, 29, 29),
         "accent": (239, 68, 68),
-        "details": ["18-inch Rim Depression", "Exposed Subbase Gravel", "Bus Wheel Impact Path", "Location: BLOCK-C"]
+        "details": ["Crater with exposed aggregate in fast lane", "Severe hazard for two-wheelers & RTC buses", "GHMC Zone: Khairatabad (Central)", "Coordinates: 17.4319° N, 78.4073° E"]
     },
     {
         "filename": "sample_rubbish.jpg",
-        "title": "Pine St Commercial Alleyway",
+        "title": "Kukatpally Y-Junction (Near Metro Station)",
         "color": (76, 29, 149),
         "accent": (168, 85, 247),
-        "details": ["Receptacle Overflow (+18in)", "Cardboard & Refuse Spill", "Sidewalk Clearance Obstructed", "Location: BLOCK-D"]
+        "details": ["GHMC Community Dumper Bin Overflow (+2ft)", "Commercial boxes spilling onto service road", "GHMC Zone: Kukatpally (North)", "Coordinates: 17.4938° N, 78.3995° E"]
     }
 ]
 
@@ -44,26 +44,27 @@ def generate():
         img = Image.new("RGB", (800, 600), color=item["color"])
         draw = ImageDraw.Draw(img)
         
-        # Border
+        # Outer border
         draw.rectangle([20, 20, 780, 580], outline=item["accent"], width=4)
         
-        # Title bar
+        # Header bar
         draw.rectangle([40, 40, 760, 110], fill=item["accent"])
-        draw.text((60, 60), f"CITYPULSE CAMERA OBSERVATION: {item['title']}", fill=(255, 255, 255))
+        draw.text((60, 55), "GHMC CIVIC INCIDENT SURVEILLANCE — HYDERABAD", fill=(255, 255, 255))
+        draw.text((60, 80), item["title"], fill=(230, 240, 255))
         
-        # Simulated street grid
+        # Grid lines representing road inspection
         for y in range(140, 360, 40):
             draw.line([(60, y), (740, y)], fill=(80, 80, 90), width=1)
             
-        # Draw mock target defect boundary
+        # Target defect marker
         draw.rectangle([250, 160, 550, 340], outline=(255, 255, 255), width=3)
-        draw.text((260, 170), "[TARGET DEFECT ZONE]", fill=(255, 255, 255))
+        draw.text((260, 170), "[TARGET CIVIC HAZARD ZONE]", fill=(255, 255, 255))
         
         # Evidence details
-        y_text = 400
+        y_text = 390
         draw.text((60, y_text), "AUTOMATED MULTIMODAL EVIDENCE TAGS:", fill=(255, 255, 255))
         for line in item["details"]:
-            y_text += 35
+            y_text += 32
             draw.text((80, y_text), f"• {line}", fill=(220, 225, 230))
             
         filepath = os.path.join(OUTPUT_DIR, item["filename"])

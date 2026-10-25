@@ -45,7 +45,7 @@ OFFLINE_PRESETS = {
         "severity": 4,
         "accessibility_impact": 1,
         "uncertainty": "Interior basin blockage, pipe siltation level, and flow capacity under heavy precipitation cannot be verified without physical drain inspection.",
-        "recommended_action": "Schedule vacuum truck clean-out and verify subsurface drain line clearance."
+        "recommended_action": "Dispatch GHMC Disaster Response Force (DRF) vac-truck unit to clear silt trap and de-clog catch-pit."
     },
     "broken_footpath": {
         "issue_type": "broken_footpath",
@@ -58,7 +58,7 @@ OFFLINE_PRESETS = {
         "severity": 3,
         "accessibility_impact": 5,
         "uncertainty": "Sub-slab tree root progression rate, soil void size, and subterranean utility conflict cannot be confirmed from surface view.",
-        "recommended_action": "Apply temporary high-visibility warning paint and cold-mix ramp; schedule permanent concrete slab grinding or repour."
+        "recommended_action": "Barricade perimeter; level flagstone base with compacted stone dust and restore barrier-free pedestrian corridor."
     },
     "pothole": {
         "issue_type": "pothole",
@@ -71,7 +71,7 @@ OFFLINE_PRESETS = {
         "severity": 4,
         "accessibility_impact": 1,
         "uncertainty": "Cavity depth under standing sediment, water intrusion into subbase, and load-bearing subgrade damage cannot be measured from photo.",
-        "recommended_action": "Mark with traffic cone; dispatch asphalt patching crew for hot/cold mix compaction within 48 hours."
+        "recommended_action": "Erect reflective warning cones; schedule GHMC bitumen hot-mix compaction patch crew within 24 hours."
     },
     "overflowing_rubbish": {
         "issue_type": "overflowing_rubbish",
@@ -84,7 +84,7 @@ OFFLINE_PRESETS = {
         "severity": 2,
         "accessibility_impact": 2,
         "uncertainty": "Hazardous materials, sharp glass inside unsealed sacks, or biological waste presence cannot be safely verified visually.",
-        "recommended_action": "Route priority sanitation sweep and evaluate bin capacity or collection frequency for this location."
+        "recommended_action": "Route priority GHMC compactor truck sweep; evaluate dumper bin capacity and collection frequency."
     }
 }
 
