@@ -1,30 +1,111 @@
-# CityPulse 🌆
+# CityPulse — 30-Minute Hackathon Prototype 🏙️
 
-**CityPulse** is an AI-powered urban infrastructure intelligence system that transforms everyday street imagery into actionable insights for smarter city maintenance. Powered by Gemma 4's multimodal capabilities, CityPulse analyzes street images and resident-reported descriptions to identify civic issues such as potholes, blocked drains, overflowing rubbish, damaged footpaths, and accessibility barriers.
+> **Tagline:** Turn street footage into actionable infrastructure intelligence.  
+> **One-Line Pitch:** CityPulse turns everyday street imagery into a live, evidence-backed maintenance queue—so city teams can see recurring problems, understand why they matter, and decide what to inspect first.
 
-The system extracts structured information from visual reports, identifies recurring issues using location-based grouping, and prioritizes observations through a transparent scoring algorithm based on severity, recurrence, and accessibility impact.
+---
 
-### ✨ Key Features
+## 1. Problem & Context
+Municipal public works departments receive thousands of fragmented citizen complaints each month detailing broken footpaths, clogged storm drains, potholes, and overflowing refuse. These reports:
+1. Arrive in disparate descriptions without visual standardization.
+2. Fragment identical physical locations into separate disconnected tickets.
+3. Lack transparent prioritization, forcing city teams to guess which defect poses immediate risk.
 
-- **Multimodal AI Analysis:** Uses Gemma 4 to interpret street imagery and textual descriptions.
-- **Structured Information Extraction:** Converts observations into structured JSON containing issue categories, visual evidence, severity, uncertainty, and recommended actions.
-- **Duplicate Detection:** Groups potentially related reports to identify recurring infrastructure problems.
-- **Intelligent Prioritization:** Ranks issues using an explainable, weighted scoring algorithm.
-- **Interactive Dashboard:** Visualizes reported issues, recurring hotspots, priority rankings, and recommended inspection actions.
-- **Evidence-Based Decisions:** Helps maintenance teams understand why an issue is flagged and what requires further verification.
+**CityPulse** bridges this gap:
+- **Multimodal AI (Gemma / Gemini Vision):** Converts street photos and resident notes into structured visible evidence, severity ratings, and uncertainty flags without hallucinating unseen subbase damage.
+- **Recurrence Hotspot Clustering:** Automatically correlates reports by physical location identifiers.
+- **Explainable Priority Heuristic:** Computes an inspect-first priority ranking using transparent civic weighting.
 
-### 🛠️ Tech Stack
+> ⚠️ **Safety & Scope Notice:** CityPulse provides AI-assisted triage support, not structural engineering certification or predictive deterioration modeling. A human inspector must verify all defects before dispatch. All demonstration records are synthetic.
 
-- **AI Model:** Gemma 4
-- **Programming Language:** Python
-- **Frontend & Dashboard:** Streamlit
-- **Data Format:** JSON
-- **Analytics:** Rule-based scoring and location-based grouping
+---
 
-### 🎯 Vision
+## 2. Architecture & Data Flow
 
-CityPulse aims to help cities move beyond fragmented complaint management toward proactive, evidence-driven infrastructure maintenance. By consolidating visual observations and highlighting recurring problems, it supports better inspection planning and more informed resource allocation.
+```text
+Street photo / sample video frame / resident note
+                         │
+                         ▼
+             Gemma Multimodal Triage
+      (Extracts visible evidence, severity, uncertainty)
+                         │
+                         ▼
+             Structured JSON Observation
+                         │
+                         ▼
+       Location Clustering & Recurrence Grouping
+                         │
+                         ▼
+     Deterministic Priority Scoring Heuristic
+   Score = (Severity × 3) + min(Repeats - 1, 4) × 2 + (Accessibility × 2)
+                         │
+                         ▼
+          CityPulse Interactive Dashboard
+      (Priority Queue, Hotspot Map, Inspection Actions)
+```
 
-**CityPulse doesn't replace human inspectors—it helps them identify where to look first.**
+### Why Separate Model Inference & Scoring?
+- **Multimodal Model (Gemma / Gemini):** Interprets unstructured visual reality, identifies defects, surfaces concrete visible evidence, and explicitly flags what *cannot* be seen (e.g. pipe depth, subbase voids).
+- **Deterministic Code (Python):** Handles exact counting, duplicate deduplication, hotspot clustering, and transparent formula scoring. Eliminates black-box scoring.
 
-*Note: CityPulse is a prototype intended for AI-assisted infrastructure triage. Findings and priority scores require validation, and critical decisions should involve human inspection.*
+---
+
+## 3. Transparent Priority Scoring Heuristic
+
+$$\text{Priority Score} = (\text{Severity} \times 3) + \min(\text{Repeats} - 1, 4) \times 2 + (\text{Accessibility Impact} \times 2)$$
+
+- **Severity (1–5, weighted $\times 3$):** Direct physical hazard or structural degradation observed.
+- **Recurrence ($\min(\text{Repeats}-1, 4) \times 2$):** Citizen complaint frequency at this specific location (caps at 4 repeats / 8 bonus points to avoid spam dominance).
+- **Accessibility Impact (0–5, weighted $\times 2$):** Obstruction to wheelchairs, strollers, cane-users, or transit crossings.
+
+### Example:
+- Severity: 4 $\rightarrow$ 12 pts
+- Repeated observations: 3 $\rightarrow$ 4 pts
+- Accessibility impact: 2 $\rightarrow$ 4 pts
+- **Total: 20 pts (HIGH URGENCY)**
+
+---
+
+## 4. Quickstart: Running CityPulse
+
+### Prerequisites
+- Python 3.10+
+- Streamlit & Pillow (installed automatically via requirements)
+
+### Installation & Launch
+```bash
+cd "C:\Users\Moiz\.gemini\antigravity\scratch\citypulse"
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
+```
+
+### Optional Live Gemma / Gemini API
+CityPulse includes high-fidelity deterministic offline presets so **the demo works 100% offline with zero setup**. If you wish to enable live multimodal inference with your own Google Gemini or Gemma API key:
+- Pass your key in the Streamlit sidebar input, or:
+- Set environment variable: `set GEMINI_API_KEY=your_api_key_here`
+
+---
+
+## 5. 45-Second Judge Demo Sequence
+
+| Time | Action | What to Say |
+|------|--------|-------------|
+| **0–10s** | Open Tab 1: Priority Queue | *"Cities get thousands of fragmented reports, but chronic underlying problems are buried across separate tickets."* |
+| **10–20s** | Open Tab 2: Analyze Observation | *"Watch Gemma analyze this clogged storm drain. Notice how it extracts direct visible evidence, flags what it cannot see, and assigns severity."* |
+| **20–30s** | Click **Run Triage** $\rightarrow$ **Enqueue** | *"It clusters this report into Block A, boosting the recurrence bonus."* |
+| **30–40s** | Open Tab 3: Hotspot Map | *"Inspectors instantly see the multi-issue hotspot map and an explainable score breakdown—no black-box AI."* |
+| **40–45s** | Conclude | *"CityPulse doesn't replace city inspectors—it helps them decide where to look first."* |
+
+---
+
+## 6. Project Structure
+
+```
+citypulse/
+├── app.py                # Main Streamlit dashboard (Queue, Triage, Hotspot Map, Rehearsal)
+├── sample_data.py        # Demo dataset, hotspot aggregation, priority formula
+├── gemma_triage.py       # Multimodal extraction engine (Live API + Offline Fallback)
+├── sample_images/        # Sample street frames for demonstration
+├── requirements.txt      # Dependencies
+└── README.md             # Project documentation and pitch guide
+```
